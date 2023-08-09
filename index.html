@@ -5,27 +5,30 @@
 
 
   <style id="compiled-css" type="text/css">
-    body {
-  padding: 0 24px;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
+	/* Just some basic body structure */
+	body {
+	  padding: 0 24px;
+	  margin: 0;
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	  flex-direction: column;
+	}
 
-.container {
-  position: relative;
-  height: 400px;
-  width: 400px;
-}
-.container-item {
-  position: absolute;
-  height: 50px;
-  width: 50px;
-  border: solid black;
-  transition: all 2s;
-}
+	/* This is the box that holds the boxes, it controls the size so we know what params to work within */
+	.container {
+	  position: relative; /* this has to be relative so we can keep the items absolute within */
+	  height: 400px;
+	  width: 400px;
+	}
+	/* base style for the items that are being rotated */
+	.container-item {
+	  position: absolute; /* required to be able to manually manipulate the location of the items within the container */
+	  height: 50px;
+	  width: 50px;
+	  border: solid black;
+	  transition: all 2s; /* this will make sure any change applied, for rotation, has a 2 second time to complete */
+	}
 
   </style>
 
@@ -33,25 +36,27 @@
 </head>
 <body>
     
-  
+  <!-- General structure, nothing special, just some buttons to execute rotation -->
     <div style="display: flex;flex-direction:row; margin-bottom: 10px;">
       <button id="leftButton">Counter Clockwise</button>
       <button id="rightButton">Clockwise</button>    
     </div>
+	
+  <!-- rotation area, i set the default box order, but that could easily be loaded.  each box has an id, could be programmatic as well and the base class which is required  -->
     <div class="container">
-      <div id="box1" class="container-item" style="top: 0px; left: 100px; transform: scale(0.5);">Item 1</div>
-      <div id="box2" class="container-item" style="top: 25px; left: 175px; transform: scale(0.75);">Item 2</div>
-      <div id="box3" class="container-item" style="top: 100px; left: 200px; transform: scale(1);">Item 3</div>
-      <div id="box4" class="container-item" style="top: 125px; left: 100px; transform: scale(1.25);">Item 4</div>
-      <div id="box5" class="container-item" style="top: 100px; left: 0px; transform: scale(1);">Item 5</div>
-      <div id="box6" class="container-item" style="top: 25px; left: 25px; transform: scale(0.75);">Item 6</div>
+      <div id="box1" class="container-item">Item 1</div>
+      <div id="box2" class="container-item">Item 2</div>
+      <div id="box3" class="container-item">Item 3</div>
+      <div id="box4" class="container-item">Item 4</div>
+      <div id="box5" class="container-item">Item 5</div>
+      <div id="box6" class="container-item">Item 6</div>
     </div>
 
 
 
     <script type="text/javascript">
 
-
+//static object to hold what the static style and transform animation should be for the position in the circle
 var positionStyles = {
 	'back-left': {'top':'25px','left':'25px','transform': 'scale(75%)'},
 	'back': {'top':'0','left':'100px','transform': 'scale(50%)'},
@@ -61,6 +66,7 @@ var positionStyles = {
 	'front-left': {'top':'100px','left':'0','transform': 'scale(100%)'},
 }
 
+//this holds the current position state for each box item, it will change on rotation
 var boxPositions = {
 	'box1':'back-left',
 	'box2':'back',
@@ -69,47 +75,54 @@ var boxPositions = {
 	'box5':'front',
 	'box6':'front-left',
 }
+
+//this holds the current location of the style base on the box, it probably should be inverted a bit
 var orderArray = [
 'back-left','back','back-right','front-right','front','front-left'
 ];
 
+//set the initial layout
 updateDisplay();
 
 function updateDisplay(rotation) {
-	var localOrder = [];  
-  switch(rotation) {
-    case 'clockwise':     
-    	console.log('rotating clockwise');
-      localOrder = arrayRotate(orderArray);
-      break;
-    case 'counter':
-    	console.log('rotating counter');
-      localOrder = arrayRotate(orderArray,true);
-      break;
-    default:
-    	console.log('no rotation');
-      localOrder = orderArray;
-  }
+	//rotate the order of the styles to align with the list of items depending on spin
+	  switch(rotation) {
+	    case 'clockwise':     
+	    	console.log('rotating clockwise');
+	      	arrayRotate(orderArray);
+	      break;
+	    case 'counter':
+	    	console.log('rotating counter');
+		arrayRotate(orderArray,true);
+	      break;
+	    default:
+	    	console.log('no rotation');
+	      break;
+	  }
+	//loop through each box and update what style is aligned to it after roation
 	Object.keys(boxPositions).forEach(function(key,index){
-  	console.log("Modifying box position: "+ key);
-    console.log("Currently: "+ boxPositions[key])
-  	boxPositions[key] = orderArray[index];
-    console.log("New: "+ boxPositions[key]);
-    var currentBox = document.getElementById(key);
-    currentBox.style.top = positionStyles[boxPositions[key]].top;
-    currentBox.style.left = positionStyles[boxPositions[key]].left;
-    currentBox.style.transform = positionStyles[boxPositions[key]].transform;
-    console.log(key + " element repositioned.");
-  })
+	  	console.log("Modifying box position: "+ key);
+	    	console.log("Currently: "+ boxPositions[key])
+	  	boxPositions[key] = orderArray[index];
+	    	console.log("New: "+ boxPositions[key]);
+	    	var currentBox = document.getElementById(key);
+		//hard set the styles, could have used classes here but this works fine
+	   	 currentBox.style.top = positionStyles[boxPositions[key]].top;
+	    	currentBox.style.left = positionStyles[boxPositions[key]].left;
+	   	currentBox.style.transform = positionStyles[boxPositions[key]].transform;
+	    	console.log(key + " element repositioned.");
+  	})
   
 }
 
+//helper function to rotate an array 
 function arrayRotate(arr, reverse) {
   if (reverse) arr.unshift(arr.pop());
   else arr.push(arr.shift());
   return arr;
 }
 
+//basic button click handlers
 document.getElementById('leftButton').onclick = function () {
 	updateDisplay('counter');
 }
